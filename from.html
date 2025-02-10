@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>บันทึกข้อมูลลง Local Storage</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .container { width: 300px; margin: 20px auto; text-align: center; }
+        input, button { margin: 5px; padding: 10px; width: 100%; }
+        .list { margin-top: 20px; text-align: left; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>กรอกข้อมูล</h2>
+        <input type="text" id="name" placeholder="ชื่อ">
+        <input type="number" id="age" placeholder="อายุ">
+        <button onclick="saveData()">บันทึก</button>
+        <div class="list" id="output"></div>
+    </div>
+
+    <script>
+        // ฟังก์ชันบันทึกข้อมูลลง localStorage
+        function saveData() {
+            let name = document.getElementById("name").value.trim();
+            let age = document.getElementById("age").value.trim();
+            
+            if (name && age) {
+                // ดึงข้อมูลเดิมจาก localStorage หรือสร้างอาร์เรย์ใหม่หากยังไม่มี
+                let data = JSON.parse(localStorage.getItem("users")) || [];
+                
+                // เพิ่มข้อมูลใหม่ลงในอาร์เรย์
+                data.push({ name, age });
+                
+                // บันทึกกลับลง localStorage
+                localStorage.setItem("users", JSON.stringify(data));
+                
+                // ล้างค่าใน input
+                document.getElementById("name").value = "";
+                document.getElementById("age").value = "";
+                
+                // แสดงผลข้อมูลใหม่
+                render();
+            } else {
+                alert("กรุณากรอกชื่อและอายุให้ครบถ้วน");
+            }
+        }
+
+        // ฟังก์ชันแสดงข้อมูลที่บันทึกไว้
+        function render() {
+            let output = document.getElementById("output");
+            let data = JSON.parse(localStorage.getItem("users")) || [];
+            
+            // ตรวจสอบว่ามีข้อมูลหรือไม่
+            if (data.length === 0) {
+                output.innerHTML = "<p>ไม่มีข้อมูล</p>";
+                return;
+            }
+            
+            // สร้าง HTML แสดงรายการข้อมูล
+            output.innerHTML = "<h3>ข้อมูลที่บันทึกไว้</h3>";
+            output.innerHTML += "<ul>" + data.map(user => `<li>${user.name} - อายุ ${user.age} ปี</li>`).join("") + "</ul>";
+        }
+
+        // เรียก render() เมื่อโหลดหน้าเว็บ เพื่อแสดงข้อมูลที่มีอยู่แล้ว
+        window.onload = render;
+    </script>
+</body>
+</html>
